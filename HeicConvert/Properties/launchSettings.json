@@ -1,8 +1,7 @@
 {
   "profiles": {
     "HeicConvert": {
-      "commandName": "Project",
-      "commandLineArgs": "heic png ."
+      "commandName": "Project"
     }
   }
 }

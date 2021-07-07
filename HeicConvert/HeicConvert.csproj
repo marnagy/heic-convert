@@ -10,10 +10,4 @@
     <PackageReference Include="ShellProgressBar" Version="5.1.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="IMG_2935.HEIC">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
