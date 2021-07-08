@@ -127,7 +127,7 @@ namespace HeicConvert
 			if ( args.Length < 2 || args.Length > 3)
 			{
 				Console.WriteLine("Invalid number of arguments.");
-				Console.WriteLine("Needed arguments: output format [jpg (default), jpeg, png], directory path, thread amount (default=1)");
+				Console.WriteLine("Needed arguments: output format [jpg (default), jpeg, png], directory path, thread amount (optional, default=1)");
 				Environment.Exit(1);
 			}
 
