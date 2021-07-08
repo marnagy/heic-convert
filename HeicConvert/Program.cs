@@ -17,12 +17,12 @@ namespace HeicConvert
 		{
 			CheckArgs(args);
 
-			const string inFormat = "heic";
-			string outFormat = args[0].ToLower();
+			const string inFormat = "HEIC";
+			string outFormat = args[0].ToUpper();
 
-			var dir = new DirectoryInfo(args[1]);
+			var dir = Directory.CreateDirectory(args[1]);
 			FileInfo[] files = dir.GetFiles()
-				.Where(f => Path.GetExtension(f.FullName).ToLower() == $".{inFormat}")
+				.Where(f => Path.GetExtension(f.FullName).ToUpper() == $".{inFormat}")
 				.ToArray();
 
 			int totalTicks = files.Length;
@@ -79,7 +79,7 @@ namespace HeicConvert
 
 			if ( !Directory.Exists(args[1]))
 			{
-				Console.WriteLine($"Directory {args[3]} does not exist.");
+				Console.WriteLine($"Directory {args[1]} does not exist.");
 				Console.WriteLine("Check the directory name and try again, please.");
 				Environment.Exit(1);
 			}
