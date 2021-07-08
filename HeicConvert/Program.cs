@@ -19,6 +19,7 @@ namespace HeicConvert
 
 			const string inFormat = "HEIC";
 			string outFormat = args[0].ToUpper();
+			int threadsAmount = 4;
 
 			var dir = Directory.CreateDirectory(args[1]);
 			FileInfo[] files = dir.GetFiles()
@@ -34,30 +35,67 @@ namespace HeicConvert
 			};
 			var pbar = new ProgressBar(totalTicks, "Converting files");
 
-			//ThreadPool.SetMaxThreads(workerThreads: 2, completionPortThreads: 2);
+			var taskQueue = new Queue<(FileInfo file, string outputFileName)>(files.Length);
 
-			//CountdownEvent countdown = new CountdownEvent(files.Length);
 			for (int i = 0; i < files.Length; i++)
 			{
 				FileInfo file = files[i];
 
-				//ThreadPool.QueueUserWorkItem(_ =>
-				//{
 				string fullpath = file.FullName;
 				string extension = file.Extension;
 				var sb = new StringBuilder( fullpath );
 				sb.Remove(fullpath.Length - extension.Length, extension.Length);
-				string outFilename = $"{sb}.{outFormat}";
+				string outFileName = $"{sb}.{outFormat}";
 
-				using (var image = new MagickImage(fullpath, MagickFormat.Heic))
-				{
-					image.Write(outFilename);
-				}
-
-				pbar.Tick();
-
+				taskQueue.Enqueue( (file, outFileName) );
 			}
-			//countdown.Wait();
+			Thread[] threads = new Thread[threadsAmount];
+			for (int i = 0; i < threadsAmount; i++)
+			{
+				threads[i] = new Thread(new ThreadStart( () => {
+					while (true)
+					{
+						(FileInfo, string) localItem;
+						lock (taskQueue)
+						{
+							if (taskQueue.Count == 0)
+								break;
+							else
+							{
+								localItem = taskQueue.Dequeue();
+							}
+						}
+
+						MagickFormat format;
+						switch (outFormat)
+						{
+							case "JPEG": 
+								format = MagickFormat.Jpeg;
+								break;
+							case "PNG": 
+								format = MagickFormat.Png00;
+								break;
+							case "JPG": 
+							default:
+								format = MagickFormat.Jpg;
+								break;
+						}
+
+						using (var image = new MagickImage(localItem.Item1, MagickFormat.Heic))
+						{
+							image.Write(new FileInfo(localItem.Item2), format);
+						}
+						pbar.Tick();
+					}
+				}));
+				threads[i].Start();
+			}
+
+			foreach (var thread in threads)
+			{
+				thread.Join();
+			}
+
 			Environment.Exit(0);
 		}
 		private static void CheckArgs(string[] args)
@@ -65,15 +103,15 @@ namespace HeicConvert
 			if ( args.Length != 2)
 			{
 				Console.WriteLine("Invalid number of arguments.");
-				Console.WriteLine("Needed arguments: output format [png, jpg, jpeg], directory path");
+				Console.WriteLine("Needed arguments: output format [jpg (default), jpeg, png], directory path");
 				Environment.Exit(1);
 			}
 
 			List<string> possibleFormats = new List<string>( new[] { "png", "jpg", "jpeg"} );
-			if ( possibleFormats.IndexOf( args[0] ) == -1 )
+			if ( possibleFormats.IndexOf( args[0].ToLower() ) == -1 )
 			{
 				Console.WriteLine($"Chosen format ({args[0]}) is not supported.");
-				Console.WriteLine("Please, choose one of the following: png, jpg, jpeg");
+				Console.WriteLine("Please, choose one of the following: jpg (default), jpeg, png");
 				Environment.Exit(1);
 			}
 
