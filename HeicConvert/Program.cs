@@ -105,6 +105,10 @@ namespace HeicConvert
 									image.Write(localItem.Item2, format);
 								}
 							}
+							catch
+							{
+
+							}
 							finally
 							{
 								pbar.Tick();
