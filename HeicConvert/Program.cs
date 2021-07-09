@@ -131,7 +131,7 @@ namespace HeicConvert
 			if ( args.Length < 2 || args.Length > 3)
 			{
 				Console.WriteLine("Invalid number of arguments.");
-				Console.WriteLine("Needed arguments: output format [jpg (default), jpeg, png], directory path, thread amount (optional, default=1)");
+				Console.WriteLine("Needed arguments: output format [jpg, jpeg, png], directory path, thread amount (optional, default=1)");
 				Environment.Exit(1);
 			}
 
@@ -139,7 +139,7 @@ namespace HeicConvert
 			if ( possibleFormats.IndexOf( args[0].ToLower() ) == -1 )
 			{
 				Console.WriteLine($"Chosen format ({args[0]}) is not supported.");
-				Console.WriteLine("Please, choose one of the following: jpg (default), jpeg, png");
+				Console.WriteLine("Please, choose one of the following: jpg, jpeg, png");
 				Environment.Exit(1);
 			}
 
