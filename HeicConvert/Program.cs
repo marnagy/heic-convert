@@ -27,13 +27,14 @@ namespace HeicConvert
 				.ToArray();
 
 			int totalTicks = files.Length;
-			var pbarSettings = new ProgressBarOptions
+			var pbarOptions = new ProgressBarOptions
 			{
 				DenseProgressBar = true,
 				CollapseWhenFinished = true,
-				ShowEstimatedDuration = true
+				ShowEstimatedDuration = true,
+				 ForegroundColor = ConsoleColor.White
 			};
-			var pbar = new ProgressBar(totalTicks, "Converting files");
+			var pbar = new ProgressBar(totalTicks, "Converting files", options: pbarOptions);
 
 			var taskQueue = new Queue<(FileInfo file, string outputFileName)>(files.Length);
 
